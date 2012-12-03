@@ -31,9 +31,9 @@ set :group, 'gitlab'
 
 set :application, "gitlab"
 
-set :unicorn_workers, 3
+set :unicorn_workers, 2
 
-set :pg_backup_path, '/var/backups/postgresql'
+set :use_resque, true
 
 task :production do
   set :domain, "git.zenhacks.org"
@@ -83,6 +83,4 @@ after "deploy:setup",
   "pg:init",
   "unicorn:setup"
 
-# dump database before a new successful release
-before "pg:symlink", "pg:dump"
 after "deploy:finalize_update", "pg:symlink", "gitlab:symlink"
