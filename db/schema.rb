@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121009205010) do
+ActiveRecord::Schema.define(:version => 20121123164910) do
 
   create_table "events", :force => true do |t|
     t.string   "target_type"
@@ -23,14 +23,6 @@ ActiveRecord::Schema.define(:version => 20121009205010) do
     t.datetime "updated_at",  :null => false
     t.integer  "action"
     t.integer  "author_id"
-  end
-
-  create_table "groups", :force => true do |t|
-    t.string   "name",       :null => false
-    t.string   "code",       :null => false
-    t.integer  "owner_id",   :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
   end
 
   create_table "issues", :force => true do |t|
@@ -73,6 +65,7 @@ ActiveRecord::Schema.define(:version => 20121009205010) do
     t.text     "st_diffs",      :limit => 2147483647
     t.boolean  "merged",                              :default => false, :null => false
     t.integer  "state",                               :default => 1,     :null => false
+    t.integer  "milestone_id"
   end
 
   add_index "merge_requests", ["project_id"], :name => "index_merge_requests_on_project_id"
@@ -85,6 +78,15 @@ ActiveRecord::Schema.define(:version => 20121009205010) do
     t.boolean  "closed",      :default => false, :null => false
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
+  end
+
+  create_table "namespaces", :force => true do |t|
+    t.string   "name",       :null => false
+    t.string   "path",       :null => false
+    t.integer  "owner_id",   :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.string   "type"
   end
 
   create_table "notes", :force => true do |t|
@@ -109,14 +111,13 @@ ActiveRecord::Schema.define(:version => 20121009205010) do
     t.datetime "created_at",                               :null => false
     t.datetime "updated_at",                               :null => false
     t.boolean  "private_flag",           :default => true, :null => false
-    t.string   "code"
     t.integer  "owner_id"
     t.string   "default_branch"
     t.boolean  "issues_enabled",         :default => true, :null => false
     t.boolean  "wall_enabled",           :default => true, :null => false
     t.boolean  "merge_requests_enabled", :default => true, :null => false
     t.boolean  "wiki_enabled",           :default => true, :null => false
-    t.integer  "group_id"
+    t.integer  "namespace_id"
   end
 
   create_table "protected_branches", :force => true do |t|
@@ -124,6 +125,17 @@ ActiveRecord::Schema.define(:version => 20121009205010) do
     t.string   "name",       :null => false
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "services", :force => true do |t|
+    t.string   "type"
+    t.string   "title"
+    t.string   "token"
+    t.integer  "project_id",                     :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+    t.boolean  "active",      :default => false, :null => false
+    t.string   "project_url"
   end
 
   create_table "snippets", :force => true do |t|
@@ -155,33 +167,34 @@ ActiveRecord::Schema.define(:version => 20121009205010) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "email",                                 :default => "",    :null => false
-    t.string   "encrypted_password",     :limit => 128, :default => "",    :null => false
+    t.string   "email",                  :default => "",    :null => false
+    t.string   "encrypted_password",     :default => "",    :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                         :default => 0
+    t.integer  "sign_in_count",          :default => 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                                               :null => false
-    t.datetime "updated_at",                                               :null => false
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
     t.string   "name"
-    t.boolean  "admin",                                 :default => false, :null => false
-    t.integer  "projects_limit",                        :default => 10
-    t.string   "skype",                                 :default => "",    :null => false
-    t.string   "linkedin",                              :default => "",    :null => false
-    t.string   "twitter",                               :default => "",    :null => false
+    t.boolean  "admin",                  :default => false, :null => false
+    t.integer  "projects_limit",         :default => 10
+    t.string   "skype",                  :default => "",    :null => false
+    t.string   "linkedin",               :default => "",    :null => false
+    t.string   "twitter",                :default => "",    :null => false
     t.string   "authentication_token"
-    t.boolean  "dark_scheme",                           :default => false, :null => false
-    t.integer  "theme_id",                              :default => 1,     :null => false
+    t.boolean  "dark_scheme",            :default => false, :null => false
+    t.integer  "theme_id",               :default => 1,     :null => false
     t.string   "bio"
-    t.boolean  "blocked",                               :default => false, :null => false
-    t.integer  "failed_attempts",                       :default => 0
+    t.boolean  "blocked",                :default => false, :null => false
+    t.integer  "failed_attempts",        :default => 0
     t.datetime "locked_at"
     t.string   "extern_uid"
     t.string   "provider"
+    t.string   "username"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
@@ -202,6 +215,7 @@ ActiveRecord::Schema.define(:version => 20121009205010) do
     t.datetime "created_at",                            :null => false
     t.datetime "updated_at",                            :null => false
     t.string   "type",       :default => "ProjectHook"
+    t.integer  "service_id"
   end
 
   create_table "wikis", :force => true do |t|

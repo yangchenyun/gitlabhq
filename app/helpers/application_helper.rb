@@ -36,7 +36,7 @@ module ApplicationHelper
     else
       gravatar_prefix = request.ssl? ? "https://secure" : "http://www"
       user_email.strip!
-      "#{gravatar_prefix}.gravatar.com/avatar/#{Digest::MD5.hexdigest(user_email.downcase)}?s=#{size}&d=identicon"
+      "#{gravatar_prefix}.gravatar.com/avatar/#{Digest::MD5.hexdigest(user_email.downcase)}?s=#{size}&d=mm"
     end
   end
 
@@ -75,7 +75,7 @@ module ApplicationHelper
   end
 
   def search_autocomplete_source
-    projects = current_user.projects.map{ |p| { label: p.name, url: project_path(p) } }
+    projects = current_user.projects.map{ |p| { label: p.name_with_namespace, url: project_path(p) } }
 
     default_nav = [
       { label: "My Profile", url: profile_path },
@@ -124,6 +124,10 @@ module ApplicationHelper
 
   def app_theme
     Gitlab::Theme.css_class_by_id(current_user.try(:theme_id))
+  end
+
+  def user_color_scheme_class
+    current_user.dark_scheme ? :black : :white
   end
 
   def show_last_push_widget?(event)

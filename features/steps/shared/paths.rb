@@ -54,7 +54,7 @@ module SharedPaths
   end
 
   Given 'I visit profile account page' do
-    visit profile_account_path
+    visit account_profile_path
   end
 
   Given 'I visit profile SSH keys page' do
@@ -62,15 +62,11 @@ module SharedPaths
   end
 
   Given 'I visit profile design page' do
-    visit profile_design_path
+    visit design_profile_path
   end
 
   Given 'I visit profile history page' do
-    visit profile_history_path
-  end
-
-  Given 'I visit profile token page' do
-    visit profile_token_path
+    visit history_profile_path
   end
 
   # ----------------------------------------
@@ -121,10 +117,17 @@ module SharedPaths
     visit project_commits_path(@project, @project.root_ref, {limit: 5})
   end
 
+  Given "I visit my project's commits page for a specific path" do
+    visit project_commits_path(@project, @project.root_ref + "/app/models/project.rb", {limit: 5})
+  end
+
+  Given 'I visit my project\'s commits stats page' do
+    visit stats_project_repository_path(@project)
+  end
+
   Given "I visit my project's network page" do
-    # Stub out find_all to speed this up (10 commits vs. 650)
-    commits = Grit::Commit.find_all(@project.repo, nil, {max_count: 10})
-    Grit::Commit.stub(:find_all).and_return(commits)
+    # Stub Graph::JsonBuilder max_size to speed up test (10 commits vs. 650)
+    Gitlab::Graph::JsonBuilder.stub(max_count: 10)
 
     visit graph_project_path(@project)
   end

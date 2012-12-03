@@ -5,9 +5,14 @@
         %span.btn.disabled.grouped
           %i.icon-comment
           = @notes_count
-      = link_to project_commit_path(@project, @commit, format: :patch), class: "btn small grouped" do
-        %i.icon-download-alt
-        Get Patch
+      .left.btn-group
+        %a.btn.small.grouped.dropdown-toggle{ data: {toggle: :dropdown} }
+          %i.icon-download-alt
+          Download as
+          %span.caret
+        %ul.dropdown-menu
+          %li= link_to "Email Patches", project_commit_path(@project, @commit, format: :patch)
+          %li= link_to "Plain Diff",    project_commit_path(@project, @commit, format: :diff)
       = link_to project_tree_path(@project, @commit), class: "browse-button primary grouped" do
         %strong Browse Code »
     %h3.commit-title.page_title
@@ -18,16 +23,15 @@
   .commit-info
     .row
       .span5
-        = image_tag gravatar_icon(@commit.author_email, 40), class: "avatar"
         .author
-          %strong= @commit.author_name
+          %strong= @commit.author_link avatar: true, size: 40
           authored
           %time{title: @commit.authored_date.stamp("Aug 21, 2011 9:23pm")}
             #{time_ago_in_words(@commit.authored_date)} ago
         - if @commit.different_committer?
           .committer
             &rarr;
-            %strong= @commit.committer_name
+            %strong= @commit.committer_link
             committed
             %time{title: @commit.committed_date.stamp("Aug 21, 2011 9:23pm")}
               #{time_ago_in_words(@commit.committed_date)} ago
