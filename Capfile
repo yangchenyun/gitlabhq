@@ -1,12 +1,14 @@
 load 'deploy'
 load 'deploy/assets'
 
-set :pg_config_path, File.expand_path(File.dirname(__FILE__), 'config')
+set :db_config_path, File.expand_path(File.dirname(__FILE__), 'config')
+set :db_backup_path, '/var/backups/db'
 
 require 'capistrano-zen/utils'
 require 'capistrano-zen/nginx'
 require 'capistrano-zen/nodejs'
 require 'capistrano-zen/postgresql'
+require 'capistrano-zen/mysql'
 require 'capistrano-zen/rbenv'
 require 'capistrano-zen/unicorn'
 
