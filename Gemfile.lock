@@ -72,7 +72,7 @@ GIT
       multi_json (~> 1.0)
 
 GEM
-  remote: http://rubygems.org/
+  remote: http://ruby.taobao.org/
   specs:
     actionmailer (3.2.9)
       actionpack (= 3.2.9)
