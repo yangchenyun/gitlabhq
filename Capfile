@@ -11,6 +11,7 @@ require 'capistrano-zen/postgresql'
 require 'capistrano-zen/mysql'
 require 'capistrano-zen/rbenv'
 require 'capistrano-zen/unicorn'
+require 'capistrano-zen/config'
 
 # Use Git as Version Control System
 set :scm, :git
@@ -85,4 +86,4 @@ after "deploy:setup",
   "pg:init",
   "unicorn:setup"
 
-after "deploy:finalize_update", "pg:symlink", "gitlab:symlink"
+after "deploy:finalize_update", "config:db:symlink", "gitlab:symlink"
