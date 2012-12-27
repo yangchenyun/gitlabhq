@@ -93,6 +93,9 @@ gem 'settingslogic'
 gem "foreman"
 gem "git"
 
+gem 'capistrano'
+gem 'capistrano-zen', git: 'git@github.com:zenhacks/capistrano-zen.git'
+
 group :assets do
   gem "sass-rails",   "~> 3.2.5"
   gem "coffee-rails", "~> 3.2.2"
