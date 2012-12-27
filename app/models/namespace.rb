@@ -27,9 +27,12 @@ class Namespace < ActiveRecord::Base
 
   after_create :ensure_dir_exist
   after_update :move_dir
+  after_commit :update_gitolite, on: :update, if: :require_update_gitolite
   after_destroy :rm_dir
 
   scope :root, where('type IS NULL')
+
+  attr_accessor :require_update_gitolite
 
   def self.search query
     where("name LIKE :query OR path LIKE :query", query: "%#{query}%")
@@ -48,23 +51,38 @@ class Namespace < ActiveRecord::Base
   end
 
   def ensure_dir_exist
-    namespace_dir_path = File.join(Gitlab.config.git_base_path, path)
+    namespace_dir_path = File.join(Gitlab.config.gitolite.repos_path, path)
     system("mkdir -m 770 #{namespace_dir_path}") unless File.exists?(namespace_dir_path)
   end
 
   def move_dir
     if path_changed?
-      old_path = File.join(Gitlab.config.git_base_path, path_was)
-      new_path = File.join(Gitlab.config.git_base_path, path)
+      old_path = File.join(Gitlab.config.gitolite.repos_path, path_was)
+      new_path = File.join(Gitlab.config.gitolite.repos_path, path)
       if File.exists?(new_path)
         raise "Already exists"
       end
-      system("mv #{old_path} #{new_path}")
+
+      if system("mv #{old_path} #{new_path}")
+        send_update_instructions
+        @require_update_gitolite = true
+      else
+        raise "Namespace move error #{old_path} #{new_path}"
+      end
     end
   end
 
+  def update_gitolite
+    @require_update_gitolite = false
+    projects.each(&:update_repository)
+  end
+
   def rm_dir
-    dir_path = File.join(Gitlab.config.git_base_path, path)
+    dir_path = File.join(Gitlab.config.gitolite.repos_path, path)
     system("rm -rf #{dir_path}")
+  end
+
+  def send_update_instructions
+    projects.each(&:send_move_instructions)
   end
 end
