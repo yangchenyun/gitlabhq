@@ -38,7 +38,7 @@ gem "pygments.rb",  git: "https://github.com/gitlabhq/pygments.rb.git", branch: 
 gem "github-linguist", "~> 2.3.4" , require: "linguist"
 
 # API
-gem "grape", "~> 0.2.1"
+gem "grape", "0.2.1"
 
 # Format dates and times
 # based on human-friendly examples
@@ -93,6 +93,10 @@ gem 'settingslogic'
 gem "foreman"
 gem "git"
 
+gem 'capistrano'
+
+gem 'rb-inotify'
+
 group :assets do
   gem "sass-rails",   "~> 3.2.5"
   gem "coffee-rails", "~> 3.2.2"
@@ -115,7 +119,6 @@ group :development do
   gem "letter_opener"
   gem 'quiet_assets', '~> 1.0.1'
   gem 'rack-mini-profiler'
-  gem 'capistrano'
   gem 'capistrano-zen', git: 'git@github.com:zenhacks/capistrano-zen.git'
 end
 
