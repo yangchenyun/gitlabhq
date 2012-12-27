@@ -93,9 +93,6 @@ gem 'settingslogic'
 gem "foreman"
 gem "git"
 
-gem 'capistrano'
-gem 'capistrano-zen', git: 'git@github.com:zenhacks/capistrano-zen.git'
-
 group :assets do
   gem "sass-rails",   "~> 3.2.5"
   gem "coffee-rails", "~> 3.2.2"
@@ -118,6 +115,8 @@ group :development do
   gem "letter_opener"
   gem 'quiet_assets', '~> 1.0.1'
   gem 'rack-mini-profiler'
+  gem 'capistrano'
+  gem 'capistrano-zen', git: 'git@github.com:zenhacks/capistrano-zen.git'
 end
 
 group :development, :test do
