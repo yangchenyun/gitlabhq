@@ -3,17 +3,6 @@ namespace :gitlab do
     desc "GITLAB | Show information about GitLab and its environment"
     task info: :environment  do
 
-      # check which OS is running
-      os_name = run("lsb_release -irs")
-      os_name ||= if File.readable?('/etc/system-release')
-                    File.read('/etc/system-release')
-                  end
-      os_name ||= if File.readable?('/etc/debian_version')
-                    debian_version = File.read('/etc/debian_version')
-                    "Debian #{debian_version}"
-                  end
-      os_name.squish!
-
       # check if there is an RVM environment
       rvm_version = run_and_match("rvm --version", /[\d\.]+/).try(:to_s)
       # check Ruby version
@@ -66,7 +55,7 @@ namespace :gitlab do
 
       # check Gitolite version
       gitolite_version_file = "#{Gitlab.config.gitolite.repos_path}/../gitolite/src/VERSION"
-      if File.exists?(gitolite_version_file) && File.readable?(gitolite_version_file)
+      if File.readable?(gitolite_version_file)
         gitolite_version = File.read(gitolite_version_file)
       end
 
@@ -79,32 +68,6 @@ namespace :gitlab do
       puts "Hooks:\t\t#{Gitlab.config.gitolite.hooks_path}"
       puts "Git:\t\t#{Gitlab.config.git.bin_path}"
 
-    end
-
-
-    # Helper methods
-
-    # Runs the given command and matches the output agains the given pattern
-    #
-    # Returns nil if nothing matched
-    # Retunrs the MatchData if the pattern matched
-    #
-    # see also #run
-    # see also String#match
-    def run_and_match(command, regexp)
-      run(command).try(:match, regexp)
-    end
-
-    # Runs the given command
-    #
-    # Returns nil if the command was not found
-    # Returns the output of the command otherwise
-    #
-    # see also #run_and_match
-    def run(command)
-      unless `#{command} 2>/dev/null`.blank?
-        `#{command}`
-      end
     end
   end
 end
