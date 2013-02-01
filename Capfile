@@ -34,7 +34,7 @@ set :group, 'gitlab'
 
 set :application, "gitlab"
 
-set :unicorn_workers, 2
+set :unicorn_workers, 1
 
 set :use_resque, true
 
@@ -53,6 +53,7 @@ namespace :gitlab do
 
   task :symlink, roles: :app do
     run "ln -nfs #{shared_path}/config/gitlab.yml #{release_path}/config/gitlab.yml"
+    run "ln -nfs #{shared_path}/config/unicorn.rb #{release_path}/config/unicorn.rb"
   end
 
   task :status, roles: :app do
@@ -75,7 +76,7 @@ namespace :deploy do
   end
 
   task :bundle, :roles => :app, :except => { :no_release => true } do
-    run "cd #{release_path} && bundle install"
+    run "cd #{release_path} && bundle install --without development test postgres"
   end
   after "deploy:finalize_update", "deploy:bundle"
 end
