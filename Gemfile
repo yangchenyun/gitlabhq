@@ -171,4 +171,5 @@ end
 
 group :production do
   gem "gitlab_meta", '4.0'
+  gem 'newrelic_rpm'
 end
