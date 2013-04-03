@@ -2,11 +2,21 @@ class KeyObserver < ActiveRecord::Observer
   include Gitolited
 
   def after_save(key)
-    gitolite.set_key(key.identifier, key.key, key.projects)
+    GitlabShellWorker.perform_async(
+      :add_key,
+      key.shell_id,
+      key.key
+    )
+
+    # Notify about ssh key being added
+    Notify.delay.new_ssh_key_email(key.id) if key.user
   end
 
   def after_destroy(key)
-    return if key.is_deploy_key && !key.last_deploy?
-    gitolite.remove_key(key.identifier, key.projects)
+    GitlabShellWorker.perform_async(
+      :remove_key,
+      key.shell_id,
+      key.key,
+    )
   end
 end

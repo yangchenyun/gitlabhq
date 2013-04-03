@@ -1,4 +1,4 @@
-- if @merge_request.open? && @commits.any?
+- if @merge_request.opened? && @commits.any?
   .ci_widget.ci-success{style: "display:none"}
     .alert.alert-success
       %i.icon-ok
@@ -23,7 +23,7 @@
         = link_to "Build page", ci_build_details_path(@merge_request)
 
   .ci_widget
-    .alert-message
+    .alert
       %strong
         %i.icon-refresh
         Checking for CI status for #{@merge_request.last_commit_short_sha}

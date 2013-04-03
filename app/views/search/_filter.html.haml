@@ -1,0 +1,16 @@
+%fieldset
+  %legend Groups:
+  .clearfix
+    = select_tag 'group_id', options_from_collection_for_select(current_user.authorized_groups, :id, :name, params[:group_id]), prompt: 'All', include_blank: true, class: 'trigger-submit chosen'
+
+
+%fieldset
+  %legend Teams:
+  .clearfix
+    = select_tag 'team_id', options_from_collection_for_select(current_user.authorized_teams, :id, :name, params[:team_id]), prompt: 'All', include_blank: true, class: 'trigger-submit chosen'
+
+%fieldset
+  %legend Projects:
+  .clearfix
+    = select_tag 'project_id', options_from_collection_for_select(current_user.authorized_projects, :id, :name_with_namespace, params[:project_id]), prompt: 'All', include_blank: true, class: 'trigger-submit chosen'
+

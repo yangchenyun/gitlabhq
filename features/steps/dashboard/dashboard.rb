@@ -33,7 +33,7 @@ class Dashboard < Spinach::FeatureSteps
     Event.create(
       project: project,
       author_id: user.id,
-      action: Event::Joined
+      action: Event::JOINED
     )
   end
 
@@ -47,7 +47,7 @@ class Dashboard < Spinach::FeatureSteps
     Event.create(
       project: project,
       author_id: user.id,
-      action: Event::Left
+      action: Event::LEFT
     )
   end
 
@@ -61,6 +61,12 @@ class Dashboard < Spinach::FeatureSteps
     @event   = create(:closed_issue_event, project: @project)
 
     @project.team << [current_user, :master]
+  end
+
+  Then 'I should see projects list' do
+    @user.authorized_projects.all.each do |project|
+      page.should have_link project.name_with_namespace
+    end
   end
 
   Then 'I should see groups list' do

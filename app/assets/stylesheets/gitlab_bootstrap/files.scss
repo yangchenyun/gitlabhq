@@ -135,7 +135,7 @@
         pre {
           border: none;
           border-radius: 0;
-          font-family: 'Menlo', 'Liberation Mono', 'Consolas', 'Courier New', 'andale mono','lucida console',monospace;
+          font-family: $monospace_font;
           font-size: 12px !important;
           line-height: 16px !important;
           margin: 0;
@@ -162,6 +162,7 @@
           color: #666;
           padding: 10px 6px 10px 0;
           text-align: right;
+          background: #EEE;
 
           a {
             color: #666;

@@ -1,26 +1,8 @@
 %h3.page_title
   Project: #{@project.name_with_namespace}
-  = link_to edit_admin_project_path(@project), class: "btn right" do
+  = link_to edit_admin_project_path(@project), class: "btn pull-right" do
     %i.icon-edit
     Edit
-
-- if @repository && @repository.has_commits?
-  - if !@repository.has_post_receive_file?
-    %br
-    .alert.alert-error
-      %span
-        %strong Project has commits but missing post-receive file.
-        %br
-        If you exported project manually - make a link of post-receive hook file from gitolite to project repository
-  - elsif !@repository.valid_post_receive_file?
-    %br
-    .alert.alert-error
-      %span
-        %strong Project has invalid post-receive file.
-        %br
-        1. Make sure your gitolite instace has latest post-receive file.
-        %br
-        2. Make a link of post-receive hook file from gitolite to project repository
 
 
 %br
@@ -103,20 +85,14 @@
           Last commit at:
       %td
         = last_commit(@project)
-    %tr
-      %td
-        %b
-          Post Receive File:
-      %td
-        = check_box_tag :post_receive_file, 1, @repository.has_post_receive_file?, disabled: true
 
 %br
 %h5
   Team
   %small
-    (#{@project.users_projects.count})
+    (#{@project.users.count})
 %br
-%table.zebra-striped
+%table.zebra-striped.team_members
   %thead
     %tr
       %th Name
@@ -124,13 +100,13 @@
       %th Repository Access
       %th
 
-  - @project.users_projects.each do |tm|
+  - @project.users.each do |tm|
     %tr
       %td
-        = link_to tm.user_name, admin_user_path(tm.user)
-      %td= tm.project_access_human
-      %td= link_to 'Edit Access', edit_admin_team_member_path(tm), class: "btn small"
-      %td= link_to 'Remove from team', admin_team_member_path(tm), confirm: 'Are you sure?', method: :delete, class: "btn danger small"
+        = link_to tm.name, admin_user_path(tm)
+      %td= @project.project_access_human(tm)
+      %td= link_to 'Edit Access', edit_admin_project_member_path(@project, tm), class: "btn btn-small"
+      %td= link_to 'Remove from team', admin_project_member_path(@project, tm), confirm: 'Are you sure?', method: :delete, class: "btn btn-remove small"
 
 %br
 %h5 Add new team member
@@ -147,7 +123,7 @@
       %td= select_tag :project_access, options_for_select(Project.access_options), {class: "project-access-select chosen span3"}
 
     %tr
-      %td= submit_tag 'Add', class: "btn primary"
+      %td= submit_tag 'Add', class: "btn btn-primary"
       %td
         Read more about project permissions
         %strong= link_to "here", help_permissions_path, class: "vlink"

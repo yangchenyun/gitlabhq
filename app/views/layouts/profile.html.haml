@@ -2,12 +2,13 @@
 %html{ lang: "en"}
   = render "layouts/head", title: "Profile"
   %body{class: "#{app_theme} profile"}
-    = render "layouts/flash"
     = render "layouts/head_panel", title: "Profile"
+    = render "layouts/flash"
     .container
       %ul.main_menu
         = nav_link(path: 'profiles#show', html_options: {class: 'home'}) do
-          = link_to "Profile", profile_path
+          = link_to profile_path, title: "Profile" do
+            %i.icon-home
         = nav_link(path: 'profiles#account') do
           = link_to "Account", account_profile_path
         = nav_link(controller: :keys) do

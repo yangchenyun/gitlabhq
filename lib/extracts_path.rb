@@ -50,11 +50,14 @@ module ExtractsPath
 
     return pair unless @project
 
+    # Remove relative_url_root from path
+    input.gsub!(/^#{Gitlab.config.gitlab.relative_url_root}/, "")
     # Remove project, actions and all other staff from path
     input.gsub!(/^\/#{Regexp.escape(@project.path_with_namespace)}/, "")
-    input.gsub!(/^\/(tree|commits|blame|blob|refs)\//, "") # remove actions
+    input.gsub!(/^\/(tree|commits|blame|blob|refs|graph)\//, "") # remove actions
     input.gsub!(/\?.*$/, "") # remove stamps suffix
     input.gsub!(/.atom$/, "") # remove rss feed
+    input.gsub!(/.json$/, "") # remove json suffix
     input.gsub!(/\/edit$/, "") # remove edit route part
 
     if input.match(/^([[:alnum:]]{40})(.+)/)
@@ -102,25 +105,22 @@ module ExtractsPath
   # Automatically renders `not_found!` if a valid tree path could not be
   # resolved (e.g., when a user inserts an invalid path or ref).
   def assign_ref_vars
-    # Handle formats embedded in the id
-    if params[:id].ends_with?('.atom')
-      params[:id].gsub!(/\.atom$/, '')
-      request.format = :atom
-    end
-
     path = CGI::unescape(request.fullpath.dup)
 
     @ref, @path = extract_ref(path)
 
     @id = File.join(@ref, @path)
 
-    @commit = CommitDecorator.decorate(@project.repository.commit(@ref))
+    # It is used "@project.repository.commits(@ref, @path, 1, 0)",
+    # because "@project.repository.commit(@ref)" returns wrong commit when @ref is tag name.
+    commits = @project.repository.commits(@ref, @path, 1, 0)
+    @commit = CommitDecorator.decorate(commits.first)
 
     @tree = Tree.new(@commit.tree, @ref, @path)
     @tree = TreeDecorator.new(@tree)
 
     raise InvalidPathError if @tree.invalid?
-  rescue NoMethodError, InvalidPathError
+  rescue RuntimeError, NoMethodError, InvalidPathError
     not_found!
   end
 end
